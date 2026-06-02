@@ -1,1539 +1,703 @@
-<!-- Document type declaration, tells the browser this is HTML5. -->
 <!DOCTYPE html>
-<!-- Root HTML element, wraps the entire page. -->
+<!--
+  CS2 Utility Library
+
+  This is a plain static HTML website for team CS2 utility lineups.
+
+  Main edit area:
+  Search for: const utilityData = [
+
+  Image setup:
+  Put screenshots in a folder called "images" beside this HTML file.
+  Example: images/mirage-a-stairs-stand.jpg
+
+  Note:
+  Comments are intentionally kept OUTSIDE the generated card HTML so they do not appear on the page.
+-->
 <html lang="en">
-<!-- Head section, contains page setup that is mostly hidden from users. -->
 <head>
-  <!-- Sets the character encoding so text displays correctly. -->
+  <!-- Basic browser/page setup -->
   <meta charset="UTF-8" />
-  <!-- Makes the page scale correctly on mobile and desktop screens. -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Sets the title shown in the browser tab. -->
   <title>CS2 Utility Library</title>
-  <!-- Starts the CSS section that controls the page design. -->
+
   <style>
-    /* Defines reusable colour variables for the whole site. */
+    /* ===== COLOUR VARIABLES =====
+       Change these values to restyle the whole site. */
     :root {
-      /* Sets a reusable CSS colour variable. */
       --bg: #dae0e6;
-      /* Sets a reusable CSS colour variable. */
       --panel: #ffffff;
-      /* Sets a reusable CSS colour variable. */
       --panel-alt: #f6f7f8;
-      /* Sets a reusable CSS colour variable. */
       --border: #ccc;
-      /* Sets a reusable CSS colour variable. */
       --border-dark: #999;
-      /* Sets a reusable CSS colour variable. */
       --text: #222;
-      /* Sets a reusable CSS colour variable. */
       --muted: #666;
-      /* Sets a reusable CSS colour variable. */
       --link: #0645ad;
-      /* Sets a reusable CSS colour variable. */
       --header: #cee3f8;
-      /* Sets a reusable CSS colour variable. */
       --header-border: #5f99cf;
-      /* Sets a reusable CSS colour variable. */
       --accent: #ff4500;
-      /* Sets a reusable CSS colour variable. */
       --success: #258a36;
-      /* Sets a reusable CSS colour variable. */
       --danger: #b3261e;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for *. */
-    * {
-      /* Changes how width and height are calculated. */
-      box-sizing: border-box;
-    /* Closes the current CSS rule block. */
-    }
+    /* Makes width/padding easier to reason about. */
+    * { box-sizing: border-box; }
 
-    /* Starts styling rules for body. */
+    /* Main old-Reddit-ish page style. */
     body {
-      /* Controls spacing outside the element. */
       margin: 0;
-      /* Sets the background colour or background style. */
       background: var(--bg);
-      /* Sets the text colour. */
       color: var(--text);
-      /* Sets the font used for text. */
       font-family: Verdana, Arial, sans-serif;
-      /* Sets the text size. */
       font-size: 13px;
-      /* Sets spacing between lines of text. */
       line-height: 1.35;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for a. */
-    a {
-      /* Sets the text colour. */
-      color: var(--link);
-      /* Controls underline or decoration on text. */
-      text-decoration: none;
-    /* Closes the current CSS rule block. */
-    }
+    /* Standard link behaviour. */
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-    /* Starts styling rules for a:hover. */
-    a:hover {
-      /* Controls underline or decoration on text. */
-      text-decoration: underline;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for header. */
+    /* Top blue header. */
     header {
-      /* Sets the background colour or background style. */
       background: var(--header);
-      /* Adds or changes the bottom border. */
       border-bottom: 1px solid var(--header-border);
-      /* Controls spacing inside the element. */
       padding: 8px 12px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .topbar. */
+    /* Header layout: title left, buttons right. */
     .topbar {
-      /* Limits how wide the element can become. */
       max-width: 1200px;
-      /* Controls spacing outside the element. */
       margin: 0 auto;
-      /* Controls how the element is laid out. */
       display: flex;
-      /* Sets spacing between grid or flex items. */
       gap: 12px;
-      /* Controls vertical alignment in flex layout. */
       align-items: center;
-      /* Controls horizontal distribution in flex layout. */
       justify-content: space-between;
-      /* Allows flex items to wrap onto another row. */
       flex-wrap: wrap;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .brand. */
-    .brand {
-      /* Controls how the element is laid out. */
-      display: flex;
-      /* Controls vertical alignment in flex layout. */
-      align-items: baseline;
-      /* Sets spacing between grid or flex items. */
-      gap: 8px;
-    /* Closes the current CSS rule block. */
-    }
+    .brand { display: flex; align-items: baseline; gap: 8px; }
+    .brand h1 { font-size: 20px; margin: 0; letter-spacing: -1px; }
+    .brand span { color: var(--muted); font-size: 11px; }
 
-    /* Starts styling rules for .brand h1. */
-    .brand h1 {
-      /* Sets the text size. */
-      font-size: 20px;
-      /* Controls spacing outside the element. */
-      margin: 0;
-      /* Controls spacing between letters. */
-      letter-spacing: -1px;
-    /* Closes the current CSS rule block. */
-    }
+    /* Top button row. */
+    .nav { display: flex; gap: 6px; flex-wrap: wrap; }
 
-    /* Starts styling rules for .brand span. */
-    .brand span {
-      /* Sets the text colour. */
-      color: var(--muted);
-      /* Sets the text size. */
-      font-size: 11px;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for .nav. */
-    .nav {
-      /* Controls how the element is laid out. */
-      display: flex;
-      /* Sets spacing between grid or flex items. */
-      gap: 6px;
-      /* Allows flex items to wrap onto another row. */
-      flex-wrap: wrap;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* CSS styling line that controls the page appearance. */
+    /* Shared button styling. */
     .nav button,
-    /* CSS styling line that controls the page appearance. */
     .utility-card button,
-    /* CSS styling line that controls the page appearance. */
     .filters button,
-    /* Starts styling rules for .copy-btn. */
     .copy-btn {
-      /* Adds or changes the element border. */
       border: 1px solid var(--border-dark);
-      /* Sets the background colour or background style. */
       background: #f8f8f8;
-      /* Controls spacing inside the element. */
       padding: 3px 7px;
-      /* Changes the mouse cursor when hovering. */
       cursor: pointer;
-      /* Sets the font used for text. */
       font-family: Verdana, Arial, sans-serif;
-      /* Sets the text size. */
       font-size: 12px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Sets the CSS property .nav button. */
     .nav button:hover,
-    /* Sets the CSS property .utility-card button. */
     .utility-card button:hover,
-    /* Sets the CSS property .filters button. */
     .filters button:hover,
-    /* Starts styling rules for .copy-btn:hover. */
-    .copy-btn:hover {
-      /* Sets the background colour or background style. */
-      background: #e8e8e8;
-    /* Closes the current CSS rule block. */
-    }
+    .copy-btn:hover { background: #e8e8e8; }
 
-    /* Starts styling rules for .container. */
+    /* Main page layout: sidebar + content. */
     .container {
-      /* Limits how wide the element can become. */
       max-width: 1200px;
-      /* Controls spacing outside the element. */
       margin: 10px auto;
-      /* Controls spacing inside the element. */
       padding: 0 10px;
-      /* Controls how the element is laid out. */
       display: grid;
-      /* Defines the column layout for a CSS grid. */
       grid-template-columns: 220px 1fr;
-      /* Sets spacing between grid or flex items. */
       gap: 10px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* CSS styling line that controls the page appearance. */
-    aside,
-    /* Starts styling rules for main. */
-    main {
-      /* Prevents layout overflow issues in grid columns. */
-      min-width: 0;
-    /* Closes the current CSS rule block. */
-    }
+    aside, main { min-width: 0; }
 
-    /* Starts styling rules for .box. */
+    /* Reusable white boxes. */
     .box {
-      /* Sets the background colour or background style. */
       background: var(--panel);
-      /* Adds or changes the element border. */
       border: 1px solid var(--border);
-      /* Sets the CSS property margin-bottom. */
       margin-bottom: 10px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .box h2. */
     .box h2 {
-      /* Controls spacing outside the element. */
       margin: 0;
-      /* Controls spacing inside the element. */
       padding: 6px 8px;
-      /* Sets the background colour or background style. */
       background: var(--panel-alt);
-      /* Adds or changes the bottom border. */
       border-bottom: 1px solid var(--border);
-      /* Sets the text size. */
       font-size: 13px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .box-content. */
-    .box-content {
-      /* Controls spacing inside the element. */
-      padding: 8px;
-    /* Closes the current CSS rule block. */
-    }
+    .box-content { padding: 8px; }
 
-    /* Starts styling rules for label. */
+    /* Search box and dropdowns. */
     label {
-      /* Controls how the element is laid out. */
       display: block;
-      /* Controls text boldness. */
       font-weight: bold;
-      /* Sets the CSS property margin-bottom. */
       margin-bottom: 4px;
-      /* Sets the text size. */
       font-size: 11px;
-      /* Sets the text colour. */
       color: #333;
-    /* Closes the current CSS rule block. */
     }
 
-    /* CSS styling line that controls the page appearance. */
     select,
-    /* Starts styling rules for input. */
     input {
-      /* Sets the element width. */
       width: 100%;
-      /* Controls spacing inside the element. */
       padding: 5px;
-      /* Adds or changes the element border. */
       border: 1px solid var(--border-dark);
-      /* Sets the font used for text. */
       font-family: Verdana, Arial, sans-serif;
-      /* Sets the text size. */
       font-size: 12px;
-      /* Sets the CSS property margin-bottom. */
       margin-bottom: 8px;
-      /* Sets the background colour or background style. */
       background: #fff;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .filters button. */
-    .filters button {
-      /* Sets the element width. */
-      width: 100%;
-      /* Sets the CSS property margin-bottom. */
-      margin-bottom: 5px;
-      /* Controls horizontal text alignment. */
-      text-align: left;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for .filters button.active. */
+    /* Utility type filter buttons. */
+    .filters button { width: 100%; margin-bottom: 5px; text-align: left; }
     .filters button.active {
-      /* Adds or changes the left border. */
       border-left: 4px solid var(--accent);
-      /* Controls text boldness. */
       font-weight: bold;
-      /* Sets the background colour or background style. */
       background: #fff7f3;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .small-note. */
-    .small-note {
-      /* Sets the text colour. */
-      color: var(--muted);
-      /* Sets the text size. */
-      font-size: 11px;
-    /* Closes the current CSS rule block. */
-    }
+    .small-note { color: var(--muted); font-size: 11px; }
 
-    /* Starts styling rules for .summary-grid. */
+    /* Four summary counters above the list. */
     .summary-grid {
-      /* Controls how the element is laid out. */
       display: grid;
-      /* Defines the column layout for a CSS grid. */
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      /* Sets spacing between grid or flex items. */
       gap: 8px;
-      /* Sets the CSS property margin-bottom. */
       margin-bottom: 10px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .summary-card. */
     .summary-card {
-      /* Sets the background colour or background style. */
       background: var(--panel);
-      /* Adds or changes the element border. */
       border: 1px solid var(--border);
-      /* Controls spacing inside the element. */
       padding: 8px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .summary-card strong. */
-    .summary-card strong {
-      /* Controls how the element is laid out. */
-      display: block;
-      /* Sets the text size. */
-      font-size: 18px;
-    /* Closes the current CSS rule block. */
-    }
+    .summary-card strong { display: block; font-size: 18px; }
+    .summary-card span { color: var(--muted); font-size: 11px; }
 
-    /* Starts styling rules for .summary-card span. */
-    .summary-card span {
-      /* Sets the text colour. */
-      color: var(--muted);
-      /* Sets the text size. */
-      font-size: 11px;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for .utility-list. */
-    .utility-list {
-      /* Controls how the element is laid out. */
-      display: flex;
-      /* Stacks flex items in a row or column. */
-      flex-direction: column;
-      /* Sets spacing between grid or flex items. */
-      gap: 8px;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for .utility-card. */
+    /* Utility cards. */
+    .utility-list { display: flex; flex-direction: column; gap: 8px; }
     .utility-card {
-      /* Sets the background colour or background style. */
       background: var(--panel);
-      /* Adds or changes the element border. */
       border: 1px solid var(--border);
-      /* Controls how the element is laid out. */
       display: grid;
-      /* Defines the column layout for a CSS grid. */
       grid-template-columns: 72px 1fr;
-      /* Sets spacing between grid or flex items. */
       gap: 8px;
-      /* Controls spacing inside the element. */
       padding: 8px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .vote-box. */
+    /* Old Reddit-style score area. */
     .vote-box {
-      /* Controls horizontal text alignment. */
       text-align: center;
-      /* Sets the text colour. */
       color: var(--muted);
-      /* Sets the text size. */
       font-size: 11px;
-      /* Adds or changes the right border. */
       border-right: 1px solid #eee;
-      /* Sets the CSS property padding-right. */
       padding-right: 8px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .vote-box .score. */
     .vote-box .score {
-      /* Controls how the element is laid out. */
       display: block;
-      /* Sets the text colour. */
       color: var(--accent);
-      /* Controls text boldness. */
       font-weight: bold;
-      /* Sets the text size. */
       font-size: 16px;
-      /* Controls spacing outside the element. */
       margin: 3px 0;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .utility-title. */
-    .utility-title {
-      /* Sets the text size. */
-      font-size: 15px;
-      /* Controls text boldness. */
-      font-weight: bold;
-      /* Controls spacing outside the element. */
-      margin: 0 0 3px;
-    /* Closes the current CSS rule block. */
-    }
+    .utility-title { font-size: 15px; font-weight: bold; margin: 0 0 3px; }
+    .meta { color: var(--muted); font-size: 11px; margin-bottom: 6px; }
 
-    /* Starts styling rules for .meta. */
-    .meta {
-      /* Sets the text colour. */
-      color: var(--muted);
-      /* Sets the text size. */
-      font-size: 11px;
-      /* Sets the CSS property margin-bottom. */
-      margin-bottom: 6px;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for .tags. */
-    .tags {
-      /* Controls how the element is laid out. */
-      display: flex;
-      /* Allows flex items to wrap onto another row. */
-      flex-wrap: wrap;
-      /* Sets spacing between grid or flex items. */
-      gap: 4px;
-      /* Controls spacing outside the element. */
-      margin: 6px 0;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for .tag. */
+    /* Small labels under each utility title. */
+    .tags { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
     .tag {
-      /* Adds or changes the element border. */
       border: 1px solid #d5d5d5;
-      /* Sets the background colour or background style. */
       background: #f5f5f5;
-      /* Controls spacing inside the element. */
       padding: 2px 5px;
-      /* Sets the text size. */
       font-size: 11px;
-      /* Sets the text colour. */
       color: #333;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Sets the CSS property .tag.smoke { border-left. */
     .tag.smoke { border-left: 3px solid #777; }
-    /* Sets the CSS property .tag.flash { border-left. */
     .tag.flash { border-left: 3px solid #e1a600; }
-    /* Sets the CSS property .tag.molly { border-left. */
     .tag.molly { border-left: 3px solid #d14b00; }
-    /* Sets the CSS property .tag.he { border-left. */
     .tag.he { border-left: 3px solid #3f7fbf; }
 
-    /* Starts styling rules for details. */
-    details {
-      /* Sets the CSS property margin-top. */
-      margin-top: 7px;
-      /* Sets the CSS property border-top. */
-      border-top: 1px dotted #ccc;
-      /* Sets the CSS property padding-top. */
-      padding-top: 6px;
-    /* Closes the current CSS rule block. */
-    }
+    /* Expandable details section. */
+    details { margin-top: 7px; border-top: 1px dotted #ccc; padding-top: 6px; }
+    summary { cursor: pointer; color: var(--link); font-weight: bold; }
 
-    /* Starts styling rules for summary. */
-    summary {
-      /* Changes the mouse cursor when hovering. */
-      cursor: pointer;
-      /* Sets the text colour. */
-      color: var(--link);
-      /* Controls text boldness. */
-      font-weight: bold;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for .steps. */
-    .steps {
-      /* Controls spacing outside the element. */
-      margin: 6px 0 0 18px;
-      /* Controls spacing inside the element. */
-      padding: 0;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for .steps li. */
-    .steps li {
-      /* Sets the CSS property margin-bottom. */
-      margin-bottom: 4px;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for .lineup. */
+    /* Lineup text block. */
     .lineup {
-      /* Sets the background colour or background style. */
       background: #fafafa;
-      /* Adds or changes the element border. */
       border: 1px solid #ddd;
-      /* Controls spacing inside the element. */
       padding: 6px;
-      /* Sets the CSS property margin-top. */
       margin-top: 6px;
-      /* Sets the font used for text. */
       font-family: Consolas, Monaco, monospace;
-      /* Sets the text size. */
       font-size: 12px;
-      /* Controls how whitespace and line breaks are handled. */
       white-space: pre-wrap;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .image-gallery. */
+    .steps { margin: 6px 0 0 18px; padding: 0; }
+    .steps li { margin-bottom: 4px; }
+
+    /* Screenshot gallery for each utility. */
     .image-gallery {
-      /* Controls how the element is laid out. */
       display: grid;
-      /* Defines the column layout for a CSS grid. */
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      /* Sets spacing between grid or flex items. */
       gap: 6px;
-      /* Sets the CSS property margin-top. */
       margin-top: 8px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .image-card. */
     .image-card {
-      /* Adds or changes the element border. */
       border: 1px solid #ccc;
-      /* Sets the background colour or background style. */
       background: #f7f7f7;
-      /* Controls spacing inside the element. */
       padding: 4px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .image-card img. */
     .image-card img {
-      /* Sets the element width. */
       width: 100%;
-      /* Sets the element height. */
       height: 110px;
-      /* Controls how images crop or fit inside their box. */
       object-fit: cover;
-      /* Adds or changes the element border. */
       border: 1px solid #ddd;
-      /* Sets the background colour or background style. */
       background: #eee;
-      /* Controls how the element is laid out. */
       display: block;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for .image-card span. */
     .image-card span {
-      /* Controls how the element is laid out. */
       display: block;
-      /* Sets the CSS property margin-top. */
       margin-top: 4px;
-      /* Sets the text colour. */
       color: var(--muted);
-      /* Sets the text size. */
       font-size: 11px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for @media (max-width: 760px). */
-    @media (max-width: 760px) {
-      /* Starts styling rules for .image-gallery. */
-      .image-gallery {
-        /* Defines the column layout for a CSS grid. */
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      /* Closes the current CSS rule block. */
-      }
-    /* Closes the current CSS rule block. */
-    }
+    .status-good { color: var(--success); font-weight: bold; }
+    .status-warning { color: var(--danger); font-weight: bold; }
 
-    /* Starts styling rules for .status-good. */
-    .status-good {
-      /* Sets the text colour. */
-      color: var(--success);
-      /* Controls text boldness. */
-      font-weight: bold;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for .status-warning. */
-    .status-warning {
-      /* Sets the text colour. */
-      color: var(--danger);
-      /* Controls text boldness. */
-      font-weight: bold;
-    /* Closes the current CSS rule block. */
-    }
-
-    /* Starts styling rules for footer. */
     footer {
-      /* Limits how wide the element can become. */
       max-width: 1200px;
-      /* Controls spacing outside the element. */
       margin: 20px auto;
-      /* Controls spacing inside the element. */
       padding: 10px;
-      /* Sets the text colour. */
       color: var(--muted);
-      /* Sets the text size. */
       font-size: 11px;
-    /* Closes the current CSS rule block. */
     }
 
-    /* Starts styling rules for @media (max-width: 760px). */
+    /* Mobile layout. */
     @media (max-width: 760px) {
-      /* Starts styling rules for .container. */
-      .container {
-        /* Defines the column layout for a CSS grid. */
-        grid-template-columns: 1fr;
-      /* Closes the current CSS rule block. */
-      }
-
-      /* Starts styling rules for .summary-grid. */
-      .summary-grid {
-        /* Defines the column layout for a CSS grid. */
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      /* Closes the current CSS rule block. */
-      }
-
-      /* Starts styling rules for .utility-card. */
-      .utility-card {
-        /* Defines the column layout for a CSS grid. */
-        grid-template-columns: 1fr;
-      /* Closes the current CSS rule block. */
-      }
-
-      /* Starts styling rules for .vote-box. */
+      .container { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .utility-card { grid-template-columns: 1fr; }
       .vote-box {
-        /* Adds or changes the right border. */
         border-right: 0;
-        /* Adds or changes the bottom border. */
         border-bottom: 1px solid #eee;
-        /* Sets the CSS property padding-right. */
         padding-right: 0;
-        /* Sets the CSS property padding-bottom. */
         padding-bottom: 6px;
-        /* Controls horizontal text alignment. */
         text-align: left;
-      /* Closes the current CSS rule block. */
       }
-    /* Closes the current CSS rule block. */
+      .image-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-  /* CSS styling line that controls the page appearance. */
   </style>
-<!-- Ends the head setup section. -->
 </head>
-<!-- Starts the visible content of the webpage. -->
+
 <body>
-  <!-- Head section, contains page setup that is mostly hidden from users. -->
+  <!-- Header area -->
   <header>
-    <!-- Creates the centered header layout containing title and buttons. -->
     <div class="topbar">
-      <!-- Creates the site branding area with title and subtitle. -->
       <div class="brand">
-        <!-- Displays the main site title. -->
         <h1>CS2 Utility Library</h1>
-        <!-- Displays the small subtitle beside the main title. -->
         <span>simple team nades, no nonsense</span>
-      <!-- Ends the current div wrapper. -->
       </div>
 
-      <!-- Starts the group of top navigation buttons. -->
       <nav class="nav" aria-label="Main navigation">
-        <!-- Creates a button that resets or changes the selected map filter. -->
         <button onclick="setMap('all')">All Maps</button>
-        <!-- Creates a button that changes the selected utility type filter. -->
         <button onclick="setType('all')">All Utility</button>
-        <!-- Creates a button that opens all utility detail sections. -->
         <button onclick="expandAll()">Expand All</button>
-        <!-- Creates a button that closes all utility detail sections. -->
         <button onclick="collapseAll()">Collapse All</button>
-      <!-- Ends the top navigation button group. -->
       </nav>
-    <!-- Ends the current div wrapper. -->
     </div>
-  <!-- Ends the head setup section. -->
   </header>
 
-  <!-- Starts the main two-column layout, sidebar plus utility list. -->
   <div class="container">
-    <!-- Starts the left sidebar. -->
+    <!-- Sidebar filters -->
     <aside>
-      <!-- Starts a page section or boxed content area. -->
       <section class="box">
-        <!-- Displays a box heading. -->
         <h2>Search</h2>
-        <!-- Starts an inner content wrapper with padding. -->
         <div class="box-content">
-          <!-- Displays a label for the form field below it. -->
           <label for="searchInput">Find utility</label>
-          <!-- Creates the search input and refreshes results when typed into. -->
           <input id="searchInput" type="search" placeholder="e.g. mirage smoke connector" oninput="renderUtilities()" />
 
-          <!-- Displays a label for the form field below it. -->
           <label for="mapSelect">Map</label>
-          <!-- Creates the map dropdown filter. -->
           <select id="mapSelect" onchange="renderUtilities()">
-            <!-- Adds one selectable option to a dropdown. -->
             <option value="all">All maps</option>
-            <!-- Adds one selectable option to a dropdown. -->
             <option value="mirage">Mirage</option>
-            <!-- Adds one selectable option to a dropdown. -->
             <option value="inferno">Inferno</option>
-            <!-- Adds one selectable option to a dropdown. -->
             <option value="ancient">Ancient</option>
-            <!-- Adds one selectable option to a dropdown. -->
             <option value="nuke">Nuke</option>
-            <!-- Adds one selectable option to a dropdown. -->
             <option value="dust2">Dust2</option>
-            <!-- Adds one selectable option to a dropdown. -->
             <option value="anubis">Anubis</option>
-            <!-- Adds one selectable option to a dropdown. -->
             <option value="train">Train</option>
-          <!-- Ends the dropdown list. -->
           </select>
 
-          <!-- Displays a label for the form field below it. -->
           <label for="sideSelect">Side</label>
-          <!-- Creates the side dropdown filter. -->
           <select id="sideSelect" onchange="renderUtilities()">
-            <!-- Adds one selectable option to a dropdown. -->
             <option value="all">Both sides</option>
-            <!-- Adds one selectable option to a dropdown. -->
             <option value="t">T side</option>
-            <!-- Adds one selectable option to a dropdown. -->
             <option value="ct">CT side</option>
-          <!-- Ends the dropdown list. -->
           </select>
-        <!-- Ends the current div wrapper. -->
         </div>
-      <!-- Ends the current page section. -->
       </section>
 
-      <!-- Starts a page section or boxed content area. -->
       <section class="box">
-        <!-- Displays a box heading. -->
         <h2>Utility Type</h2>
-        <!-- Starts an inner content wrapper with padding. -->
         <div class="box-content filters">
-          <!-- Creates a button that changes the selected utility type filter. -->
           <button id="filter-all" class="active" onclick="setType('all')">All utility</button>
-          <!-- Creates a button that changes the selected utility type filter. -->
           <button id="filter-smoke" onclick="setType('smoke')">Smokes</button>
-          <!-- Creates a button that changes the selected utility type filter. -->
           <button id="filter-flash" onclick="setType('flash')">Flashes</button>
-          <!-- Creates a button that changes the selected utility type filter. -->
           <button id="filter-molly" onclick="setType('molly')">Molotovs</button>
-          <!-- Creates a button that changes the selected utility type filter. -->
           <button id="filter-he" onclick="setType('he')">HE grenades</button>
-        <!-- Ends the current div wrapper. -->
         </div>
-      <!-- Ends the current page section. -->
       </section>
 
-      <!-- Starts a page section or boxed content area. -->
       <section class="box">
-        <!-- Displays a box heading. -->
         <h2>Team Notes</h2>
-        <!-- Starts an inner content wrapper with padding. -->
         <div class="box-content">
-          <!-- Displays a short helper note. -->
-          <p class="small-note">
-            <!-- HTML structure line used to build the visible page layout. -->
-            Use short names your team actually says in-game. Mark anything untested before a match.
-          <!-- HTML structure line used to build the visible page layout. -->
-          </p>
-          <!-- Displays a short helper note. -->
-          <p class="small-note">
-            <!-- HTML structure line used to build the visible page layout. -->
-            Suggested flow: learn 2 defaults per map, then add executes.
-          <!-- HTML structure line used to build the visible page layout. -->
-          </p>
-        <!-- Ends the current div wrapper. -->
+          <p class="small-note">Use short names your team actually says in-game. Mark anything untested before a match.</p>
+          <p class="small-note">Suggested flow: learn 2 defaults per map, then add executes.</p>
         </div>
-      <!-- Ends the current page section. -->
       </section>
-    <!-- Ends the left sidebar. -->
     </aside>
 
-    <!-- Starts the main content area. -->
+    <!-- Main utility list -->
     <main>
-      <!-- Starts a page section or boxed content area. -->
       <section class="summary-grid" aria-label="Utility summary">
-        <!-- Starts one summary/stat card. -->
-        <div class="summary-card">
-          <!-- Displays a number that JavaScript updates. -->
-          <strong id="countTotal">0</strong>
-          <!-- Displays small label text. -->
-          <span>matching entries</span>
-        <!-- Ends the current div wrapper. -->
-        </div>
-        <!-- Starts one summary/stat card. -->
-        <div class="summary-card">
-          <!-- Displays a number that JavaScript updates. -->
-          <strong id="countSmokes">0</strong>
-          <!-- Displays small label text. -->
-          <span>smokes</span>
-        <!-- Ends the current div wrapper. -->
-        </div>
-        <!-- Starts one summary/stat card. -->
-        <div class="summary-card">
-          <!-- Displays a number that JavaScript updates. -->
-          <strong id="countFlashes">0</strong>
-          <!-- Displays small label text. -->
-          <span>flashes</span>
-        <!-- Ends the current div wrapper. -->
-        </div>
-        <!-- Starts one summary/stat card. -->
-        <div class="summary-card">
-          <!-- Displays a number that JavaScript updates. -->
-          <strong id="countTested">0</strong>
-          <!-- Displays small label text. -->
-          <span>tested</span>
-        <!-- Ends the current div wrapper. -->
-        </div>
-      <!-- Ends the current page section. -->
+        <div class="summary-card"><strong id="countTotal">0</strong><span>matching entries</span></div>
+        <div class="summary-card"><strong id="countSmokes">0</strong><span>smokes</span></div>
+        <div class="summary-card"><strong id="countFlashes">0</strong><span>flashes</span></div>
+        <div class="summary-card"><strong id="countTested">0</strong><span>tested</span></div>
       </section>
 
-      <!-- Starts a page section or boxed content area. -->
       <section class="box">
-        <!-- Displays a box heading. -->
         <h2>Utility Sets</h2>
-        <!-- Starts an inner content wrapper with padding. -->
         <div id="utilityList" class="box-content utility-list"></div>
-      <!-- Ends the current page section. -->
       </section>
-    <!-- Ends the main content area. -->
     </main>
-  <!-- Ends the current div wrapper. -->
   </div>
 
-  <!-- Starts the footer helper text area. -->
   <footer>
-    <!-- HTML structure line used to build the visible page layout. -->
     Built as a static HTML page. Edit the utilityData array and place screenshots in the images folder to add your team's real lineups.
-  <!-- Ends the footer helper text area. -->
   </footer>
 
-  <!-- Starts the JavaScript section that powers data, filters, and rendering. -->
   <script>
-    // Starts the editable list of utility entries shown on the website.
-    const utilityData = [
-      // Starts one utility entry object.
+    /*
+      ===== MAIN EDIT SECTION =====
+
+      Add or change utility entries below.
+
+      Copy this structure for a new utility:
+
       {
-        // Sets the card title for this utility entry.
-        title: "Mirage A Execute, Stairs Smoke",
-        // Sets which map filter this utility belongs to.
+        title: "Map Area, Utility Name",
         map: "mirage",
-        // Sets whether this is T-side or CT-side utility.
         side: "t",
-        // Sets the utility type, such as smoke, flash, molly, or HE.
         type: "smoke",
-        // Sets who on the team should throw this utility.
         thrower: "Player 1",
-        // Sets the main in-game callout for this utility.
         callout: "stairs",
-        // Sets the difficulty tag shown on the card.
         difficulty: "easy",
-        // Sets whether the utility is tested or untested.
         status: "tested",
-        // Sets the simple usefulness score shown beside the card.
-        score: 92,
-        // Sets extra searchable tags shown under the card title.
-        tags: ["A site", "execute", "spawn safe"],
-        // Starts the image list for this utility entry.
-        images: [
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "stand here", src: "images/mirage-a-stairs-stand.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "aim here", src: "images/mirage-a-stairs-aim.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "landing spot", src: "images/mirage-a-stairs-land.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "result", src: "images/mirage-a-stairs-result.jpg" }
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ],
-        // Sets the lineup text shown in the expandable details area.
-        lineup: "Stand: T ramp, left wall\nAim: top of palace corner / antenna reference\nThrow: jumpthrow",
-        // Starts the list of team instructions for this utility.
-        steps: [
-          // Adds one instruction step to the utility details.
-          "Group outside A ramp.",
-          // Adds one instruction step to the utility details.
-          "Smoke stairs before palace contact.",
-          // Adds one instruction step to the utility details.
-          "Pair with jungle smoke and two pop flashes.",
-          // Adds one instruction step to the utility details.
-          "Entry clears default and close triple."
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ]
-      // Ends one utility entry or JavaScript block.
-      },
-      // Starts one utility entry object.
-      {
-        // Sets the card title for this utility entry.
-        title: "Mirage A Execute, Jungle Smoke",
-        // Sets which map filter this utility belongs to.
-        map: "mirage",
-        // Sets whether this is T-side or CT-side utility.
-        side: "t",
-        // Sets the utility type, such as smoke, flash, molly, or HE.
-        type: "smoke",
-        // Sets who on the team should throw this utility.
-        thrower: "Player 2",
-        // Sets the main in-game callout for this utility.
-        callout: "jungle",
-        // Sets the difficulty tag shown on the card.
-        difficulty: "medium",
-        // Sets whether the utility is tested or untested.
-        status: "tested",
-        // Sets the simple usefulness score shown beside the card.
-        score: 89,
-        // Sets extra searchable tags shown under the card title.
-        tags: ["A site", "execute", "connector"],
-        // Starts the image list for this utility entry.
-        images: [
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "stand here", src: "images/mirage-a-jungle-stand.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "aim here", src: "images/mirage-a-jungle-aim.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "landing spot", src: "images/mirage-a-jungle-land.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "result", src: "images/mirage-a-jungle-result.jpg" }
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ],
-        // Sets the lineup text shown in the expandable details area.
-        lineup: "Stand: T ramp, against right wall\nAim: upper window frame reference\nThrow: jumpthrow",
-        // Starts the list of team instructions for this utility.
-        steps: [
-          // Adds one instruction step to the utility details.
-          "Throw after stairs smoke is called.",
-          // Adds one instruction step to the utility details.
-          "Wait half a second before entries swing.",
-          // Adds one instruction step to the utility details.
-          "Connector player watches smoke edge.",
-          // Adds one instruction step to the utility details.
-          "Lurk holds underpass push."
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ]
-      // Ends one utility entry or JavaScript block.
-      },
-      // Starts one utility entry object.
-      {
-        // Sets the card title for this utility entry.
-        title: "Mirage Mid, Window Smoke",
-        // Sets which map filter this utility belongs to.
-        map: "mirage",
-        // Sets whether this is T-side or CT-side utility.
-        side: "t",
-        // Sets the utility type, such as smoke, flash, molly, or HE.
-        type: "smoke",
-        // Sets who on the team should throw this utility.
-        thrower: "Mid player",
-        // Sets the main in-game callout for this utility.
-        callout: "window",
-        // Sets the difficulty tag shown on the card.
-        difficulty: "easy",
-        // Sets whether the utility is tested or untested.
-        status: "tested",
-        // Sets the simple usefulness score shown beside the card.
-        score: 95,
-        // Sets extra searchable tags shown under the card title.
-        tags: ["mid control", "default"],
-        // Starts the image list for this utility entry.
-        images: [
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "stand here", src: "images/mirage-mid-window-stand.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "aim here", src: "images/mirage-mid-window-aim.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "landing spot", src: "images/mirage-mid-window-land.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "result", src: "images/mirage-mid-window-result.jpg" }
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ],
-        // Sets the lineup text shown in the expandable details area.
-        lineup: "Stand: T spawn trash can\nAim: small gap above roofline\nThrow: jumpthrow",
-        // Starts the list of team instructions for this utility.
-        steps: [
-          // Adds one instruction step to the utility details.
-          "Throw instantly from spawn if mid control is called.",
-          // Adds one instruction step to the utility details.
-          "Top mid waits for bloom before crossing.",
-          // Adds one instruction step to the utility details.
-          "One player watches underpass.",
-          // Adds one instruction step to the utility details.
-          "Connector pressure starts after cat is smoked or flashed."
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ]
-      // Ends one utility entry or JavaScript block.
-      },
-      // Starts one utility entry object.
-      {
-        // Sets the card title for this utility entry.
-        title: "Inferno Banana, Deep CT Molly",
-        // Sets which map filter this utility belongs to.
-        map: "inferno",
-        // Sets whether this is T-side or CT-side utility.
-        side: "t",
-        // Sets the utility type, such as smoke, flash, molly, or HE.
-        type: "molly",
-        // Sets who on the team should throw this utility.
-        thrower: "Banana support",
-        // Sets the main in-game callout for this utility.
-        callout: "deep banana",
-        // Sets the difficulty tag shown on the card.
-        difficulty: "medium",
-        // Sets whether the utility is tested or untested.
-        status: "tested",
-        // Sets the simple usefulness score shown beside the card.
-        score: 81,
-        // Sets extra searchable tags shown under the card title.
-        tags: ["banana", "map control"],
-        // Starts the image list for this utility entry.
-        images: [
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "stand here", src: "images/inferno-banana-molly-stand.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "aim here", src: "images/inferno-banana-molly-aim.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "landing spot", src: "images/inferno-banana-molly-land.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "result", src: "images/inferno-banana-molly-result.jpg" }
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ],
-        // Sets the lineup text shown in the expandable details area.
-        lineup: "Stand: car corner\nAim: roof tile above half wall\nThrow: left click",
-        // Starts the list of team instructions for this utility.
-        steps: [
-          // Adds one instruction step to the utility details.
-          "Use early round to stop CT banana control.",
-          // Adds one instruction step to the utility details.
-          "Flash over roof before swinging logs.",
-          // Adds one instruction step to the utility details.
-          "Do not overcommit if CTs smoke deep banana.",
-          // Adds one instruction step to the utility details.
-          "Re-clear sandbags before late B hit."
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ]
-      // Ends one utility entry or JavaScript block.
-      },
-      // Starts one utility entry object.
-      {
-        // Sets the card title for this utility entry.
-        title: "Inferno B Retake, Coffins Flash",
-        // Sets which map filter this utility belongs to.
-        map: "inferno",
-        // Sets whether this is T-side or CT-side utility.
-        side: "ct",
-        // Sets the utility type, such as smoke, flash, molly, or HE.
-        type: "flash",
-        // Sets who on the team should throw this utility.
-        thrower: "CT support",
-        // Sets the main in-game callout for this utility.
-        callout: "coffins",
-        // Sets the difficulty tag shown on the card.
-        difficulty: "easy",
-        // Sets whether the utility is tested or untested.
-        status: "tested",
-        // Sets the simple usefulness score shown beside the card.
-        score: 77,
-        // Sets extra searchable tags shown under the card title.
-        tags: ["retake", "B site"],
-        // Starts the image list for this utility entry.
-        images: [
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "stand here", src: "images/inferno-b-retake-flash-stand.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "aim here", src: "images/inferno-b-retake-flash-aim.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "landing spot", src: "images/inferno-b-retake-flash-land.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "result", src: "images/inferno-b-retake-flash-result.jpg" }
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ],
-        // Sets the lineup text shown in the expandable details area.
-        lineup: "Stand: CT spawn arch\nAim: above coffins wall\nThrow: left click",
-        // Starts the list of team instructions for this utility.
-        steps: [
-          // Adds one instruction step to the utility details.
-          "Call before throw, do not blind teammate swinging CT.",
-          // Adds one instruction step to the utility details.
-          "First player clears new box.",
-          // Adds one instruction step to the utility details.
-          "Second player checks dark.",
-          // Adds one instruction step to the utility details.
-          "Save smoke for bomb if kit is available."
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ]
-      // Ends one utility entry or JavaScript block.
-      },
-      // Starts one utility entry object.
-      {
-        // Sets the card title for this utility entry.
-        title: "Ancient A Main, Donut Smoke",
-        // Sets which map filter this utility belongs to.
-        map: "ancient",
-        // Sets whether this is T-side or CT-side utility.
-        side: "t",
-        // Sets the utility type, such as smoke, flash, molly, or HE.
-        type: "smoke",
-        // Sets who on the team should throw this utility.
-        thrower: "A main player",
-        // Sets the main in-game callout for this utility.
-        callout: "donut",
-        // Sets the difficulty tag shown on the card.
-        difficulty: "medium",
-        // Sets whether the utility is tested or untested.
-        status: "untested",
-        // Sets the simple usefulness score shown beside the card.
-        score: 64,
-        // Sets extra searchable tags shown under the card title.
+        score: 90,
         tags: ["A site", "execute"],
-        // Starts the image list for this utility entry.
         images: [
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "stand here", src: "images/ancient-a-donut-stand.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "aim here", src: "images/ancient-a-donut-aim.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "landing spot", src: "images/ancient-a-donut-land.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "result", src: "images/ancient-a-donut-result.jpg" }
-        // JavaScript line used for data, filtering, rendering, or page interaction.
+          { label: "stand here", src: "images/example-stand.jpg" },
+          { label: "aim here", src: "images/example-aim.jpg" },
+          { label: "landing spot", src: "images/example-land.jpg" },
+          { label: "result", src: "images/example-result.jpg" }
         ],
-        // Sets the lineup text shown in the expandable details area.
-        lineup: "Stand: A main back wall\nAim: leaf/stone reference\nThrow: jumpthrow",
-        // Starts the list of team instructions for this utility.
+        lineup: "Stand: example position\nAim: example point\nThrow: jumpthrow",
         steps: [
-          // Adds one instruction step to the utility details.
-          "Use with temple smoke.",
-          // Adds one instruction step to the utility details.
-          "Wait for smoke to bloom before lane contact.",
-          // Adds one instruction step to the utility details.
-          "One player holds flank from lobby.",
-          // Adds one instruction step to the utility details.
-          "Trade through site boxes."
-        // JavaScript line used for data, filtering, rendering, or page interaction.
+          "Step one.",
+          "Step two."
         ]
-      // Ends one utility entry or JavaScript block.
-      },
-      // Starts one utility entry object.
-      {
-        // Sets the card title for this utility entry.
-        title: "Nuke Outside, Red Smoke",
-        // Sets which map filter this utility belongs to.
-        map: "nuke",
-        // Sets whether this is T-side or CT-side utility.
-        side: "t",
-        // Sets the utility type, such as smoke, flash, molly, or HE.
-        type: "smoke",
-        // Sets who on the team should throw this utility.
-        thrower: "Outside player",
-        // Sets the main in-game callout for this utility.
-        callout: "red",
-        // Sets the difficulty tag shown on the card.
-        difficulty: "easy",
-        // Sets whether the utility is tested or untested.
-        status: "tested",
-        // Sets the simple usefulness score shown beside the card.
-        score: 86,
-        // Sets extra searchable tags shown under the card title.
-        tags: ["outside", "default"],
-        // Starts the image list for this utility entry.
-        images: [
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "stand here", src: "images/nuke-outside-red-stand.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "aim here", src: "images/nuke-outside-red-aim.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "landing spot", src: "images/nuke-outside-red-land.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "result", src: "images/nuke-outside-red-result.jpg" }
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ],
-        // Sets the lineup text shown in the expandable details area.
-        lineup: "Stand: T roof rail\nAim: silo edge reference\nThrow: jumpthrow",
-        // Starts the list of team instructions for this utility.
-        steps: [
-          // Adds one instruction step to the utility details.
-          "Throw first in outside wall.",
-          // Adds one instruction step to the utility details.
-          "Second smoke lands towards garage.",
-          // Adds one instruction step to the utility details.
-          "Cross secret only after flash.",
-          // Adds one instruction step to the utility details.
-          "Late lurk watches mini push."
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ]
-      // Ends one utility entry or JavaScript block.
-      },
-      // Starts one utility entry object.
-      {
-        // Sets the card title for this utility entry.
-        title: "Dust2 Long, Anti-Rush HE",
-        // Sets which map filter this utility belongs to.
-        map: "dust2",
-        // Sets whether this is T-side or CT-side utility.
-        side: "ct",
-        // Sets the utility type, such as smoke, flash, molly, or HE.
-        type: "he",
-        // Sets who on the team should throw this utility.
-        thrower: "A player",
-        // Sets the main in-game callout for this utility.
-        callout: "long doors",
-        // Sets the difficulty tag shown on the card.
-        difficulty: "easy",
-        // Sets whether the utility is tested or untested.
-        status: "tested",
-        // Sets the simple usefulness score shown beside the card.
-        score: 72,
-        // Sets extra searchable tags shown under the card title.
-        tags: ["anti rush", "long"],
-        // Starts the image list for this utility entry.
-        images: [
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "stand here", src: "images/dust2-long-he-stand.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "aim here", src: "images/dust2-long-he-aim.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "landing spot", src: "images/dust2-long-he-land.jpg" },
-          // Adds one screenshot to the gallery with a label and file path.
-          { label: "result", src: "images/dust2-long-he-result.jpg" }
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ],
-        // Sets the lineup text shown in the expandable details area.
-        lineup: "Stand: A car path\nAim: above long doors\nThrow: running left click",
-        // Starts the list of team instructions for this utility.
-        steps: [
-          // Adds one instruction step to the utility details.
-          "Use when expecting fast long.",
-          // Adds one instruction step to the utility details.
-          "Pair with teammate flash over long.",
-          // Adds one instruction step to the utility details.
-          "Do not both commit if T side smokes cross.",
-          // Adds one instruction step to the utility details.
-          "Fallback to site after damage."
-        // JavaScript line used for data, filtering, rendering, or page interaction.
-        ]
-      // Ends one utility entry or JavaScript block.
       }
-    // Opens or closes the utility data array.
+    */
+    const utilityData = [
+      {
+        title: "Mirage A Execute, Stairs Smoke",
+        map: "mirage",
+        side: "t",
+        type: "smoke",
+        thrower: "Player 1",
+        callout: "stairs",
+        difficulty: "easy",
+        status: "tested",
+        score: 92,
+        tags: ["A site", "execute", "spawn safe"],
+        images: [
+          { label: "stand here", src: "images/mirage-a-stairs-stand.jpg" },
+          { label: "aim here", src: "images/mirage-a-stairs-aim.jpg" },
+          { label: "landing spot", src: "images/mirage-a-stairs-land.jpg" },
+          { label: "result", src: "images/mirage-a-stairs-result.jpg" }
+        ],
+        lineup: "Stand: T ramp, left wall\nAim: top of palace corner / antenna reference\nThrow: jumpthrow",
+        steps: [
+          "Group outside A ramp.",
+          "Smoke stairs before palace contact.",
+          "Pair with jungle smoke and two pop flashes.",
+          "Entry clears default and close triple."
+        ]
+      },
+      {
+        title: "Mirage A Execute, Jungle Smoke",
+        map: "mirage",
+        side: "t",
+        type: "smoke",
+        thrower: "Player 2",
+        callout: "jungle",
+        difficulty: "medium",
+        status: "tested",
+        score: 89,
+        tags: ["A site", "execute", "connector"],
+        images: [
+          { label: "stand here", src: "images/mirage-a-jungle-stand.jpg" },
+          { label: "aim here", src: "images/mirage-a-jungle-aim.jpg" },
+          { label: "landing spot", src: "images/mirage-a-jungle-land.jpg" },
+          { label: "result", src: "images/mirage-a-jungle-result.jpg" }
+        ],
+        lineup: "Stand: T ramp, against right wall\nAim: upper window frame reference\nThrow: jumpthrow",
+        steps: [
+          "Throw after stairs smoke is called.",
+          "Wait half a second before entries swing.",
+          "Connector player watches smoke edge.",
+          "Lurk holds underpass push."
+        ]
+      },
+      {
+        title: "Mirage Mid, Window Smoke",
+        map: "mirage",
+        side: "t",
+        type: "smoke",
+        thrower: "Mid player",
+        callout: "window",
+        difficulty: "easy",
+        status: "tested",
+        score: 95,
+        tags: ["mid control", "default"],
+        images: [
+          { label: "stand here", src: "images/mirage-mid-window-stand.jpg" },
+          { label: "aim here", src: "images/mirage-mid-window-aim.jpg" },
+          { label: "landing spot", src: "images/mirage-mid-window-land.jpg" },
+          { label: "result", src: "images/mirage-mid-window-result.jpg" }
+        ],
+        lineup: "Stand: T spawn trash can\nAim: small gap above roofline\nThrow: jumpthrow",
+        steps: [
+          "Throw instantly from spawn if mid control is called.",
+          "Top mid waits for bloom before crossing.",
+          "One player watches underpass.",
+          "Connector pressure starts after cat is smoked or flashed."
+        ]
+      },
+      {
+        title: "Inferno Banana, Deep CT Molly",
+        map: "inferno",
+        side: "t",
+        type: "molly",
+        thrower: "Banana support",
+        callout: "deep banana",
+        difficulty: "medium",
+        status: "tested",
+        score: 81,
+        tags: ["banana", "map control"],
+        images: [
+          { label: "stand here", src: "images/inferno-banana-molly-stand.jpg" },
+          { label: "aim here", src: "images/inferno-banana-molly-aim.jpg" },
+          { label: "landing spot", src: "images/inferno-banana-molly-land.jpg" },
+          { label: "result", src: "images/inferno-banana-molly-result.jpg" }
+        ],
+        lineup: "Stand: car corner\nAim: roof tile above half wall\nThrow: left click",
+        steps: [
+          "Use early round to stop CT banana control.",
+          "Flash over roof before swinging logs.",
+          "Do not overcommit if CTs smoke deep banana.",
+          "Re-clear sandbags before late B hit."
+        ]
+      },
+      {
+        title: "Inferno B Retake, Coffins Flash",
+        map: "inferno",
+        side: "ct",
+        type: "flash",
+        thrower: "CT support",
+        callout: "coffins",
+        difficulty: "easy",
+        status: "tested",
+        score: 77,
+        tags: ["retake", "B site"],
+        images: [
+          { label: "stand here", src: "images/inferno-b-retake-flash-stand.jpg" },
+          { label: "aim here", src: "images/inferno-b-retake-flash-aim.jpg" },
+          { label: "landing spot", src: "images/inferno-b-retake-flash-land.jpg" },
+          { label: "result", src: "images/inferno-b-retake-flash-result.jpg" }
+        ],
+        lineup: "Stand: CT spawn arch\nAim: above coffins wall\nThrow: left click",
+        steps: [
+          "Call before throw, do not blind teammate swinging CT.",
+          "First player clears new box.",
+          "Second player checks dark.",
+          "Save smoke for bomb if kit is available."
+        ]
+      }
     ];
 
-    // Stores the currently selected utility type filter.
+    /* Active utility type filter. */
     let activeType = "all";
 
-    // Creates a helper function for lowercase searching.
+    /* Lowercase helper for search. */
     function normalise(value) {
-      // Converts a value into lowercase text for easier matching.
       return String(value).toLowerCase();
-    // Ends one utility entry or JavaScript block.
     }
 
-    // Creates the function that changes the selected utility type.
+    /* Sets utility type filter, then redraws the list. */
     function setType(type) {
-      // JavaScript line used for data, filtering, rendering, or page interaction.
       activeType = type;
-      // JavaScript line used for data, filtering, rendering, or page interaction.
+
       document.querySelectorAll(".filters button").forEach(button => {
-        // Removes the active highlight from a filter button.
         button.classList.remove("active");
-      // JavaScript line used for data, filtering, rendering, or page interaction.
       });
-      // Adds the active highlight to the selected filter button.
+
       document.getElementById(`filter-${type}`).classList.add("active");
-      // Refreshes the displayed utility cards.
       renderUtilities();
-    // Ends one utility entry or JavaScript block.
     }
 
-    // Creates the function that changes the map dropdown.
+    /* Sets map dropdown, then redraws the list. */
     function setMap(map) {
-      // Reads or changes the selected map dropdown value.
       document.getElementById("mapSelect").value = map;
-      // Refreshes the displayed utility cards.
       renderUtilities();
-    // Ends one utility entry or JavaScript block.
     }
 
-    // Creates the function that filters utility entries by search, map, side, and type.
+    /* Applies search, map, side, and type filters. */
     function getFilteredData() {
-      // Reads the current search box value.
       const search = normalise(document.getElementById("searchInput").value);
-      // Reads or changes the selected map dropdown value.
       const map = document.getElementById("mapSelect").value;
-      // Reads the selected side dropdown value.
       const side = document.getElementById("sideSelect").value;
 
-      // Loops through utility entries and keeps only matching ones.
       return utilityData.filter(item => {
-        // Builds searchable text for the current utility entry.
         const text = normalise([
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           item.title,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           item.map,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           item.side,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           item.type,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           item.thrower,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           item.callout,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           item.difficulty,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           item.status,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           item.tags.join(" "),
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           item.images.map(image => image.label).join(" "),
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           item.steps.join(" ")
-        // JavaScript line used for data, filtering, rendering, or page interaction.
         ].join(" "));
 
-        // Checks whether the entry matches the search box text.
         const matchesSearch = text.includes(search);
-        // Checks whether the entry matches the selected map.
         const matchesMap = map === "all" || item.map === map;
-        // Checks whether the entry matches the selected side.
         const matchesSide = side === "all" || item.side === side;
-        // Checks whether the entry matches the selected utility type.
         const matchesType = activeType === "all" || item.type === activeType;
 
-        // Returns a value from the current function.
         return matchesSearch && matchesMap && matchesSide && matchesType;
-      // JavaScript line used for data, filtering, rendering, or page interaction.
       });
-    // Ends one utility entry or JavaScript block.
     }
 
-    // Creates the function that draws utility cards on the page.
+    /* Builds the visible cards. */
     function renderUtilities() {
-      // Creates a JavaScript constant used by the page logic.
       const list = document.getElementById("utilityList");
-      // Creates a JavaScript constant used by the page logic.
       const filtered = getFilteredData();
 
-      // Updates the total matching entries number.
       document.getElementById("countTotal").textContent = filtered.length;
-      // Updates the matching smoke count.
       document.getElementById("countSmokes").textContent = filtered.filter(item => item.type === "smoke").length;
-      // Updates the matching flash count.
       document.getElementById("countFlashes").textContent = filtered.filter(item => item.type === "flash").length;
-      // Updates the matching tested count.
       document.getElementById("countTested").textContent = filtered.filter(item => item.status === "tested").length;
 
-      // Checks whether the current filters found no results.
       if (filtered.length === 0) {
-        // Shows a message when no utility entries match.
         list.innerHTML = `<p class="small-note">No utility found. Try clearing the search or filters.</p>`;
-        // JavaScript line used for data, filtering, rendering, or page interaction.
         return;
-      // Ends one utility entry or JavaScript block.
       }
 
-      // Starts converting filtered utility entries into HTML cards.
       list.innerHTML = filtered.map((item, index) => {
-        // Chooses green or red status styling based on tested status.
         const statusClass = item.status === "tested" ? "status-good" : "status-warning";
-        // Builds the visible tag HTML for a utility card.
+
         const tags = [
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           `<span class="tag ${item.type}">${item.type}</span>`,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           `<span class="tag">${item.map}</span>`,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           `<span class="tag">${item.side.toUpperCase()} side</span>`,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           `<span class="tag">${item.difficulty}</span>`,
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           ...item.tags.map(tag => `<span class="tag">${tag}</span>`)
-        // JavaScript line used for data, filtering, rendering, or page interaction.
         ].join("");
 
-        // Builds numbered HTML list items from the steps array.
         const steps = item.steps.map(step => `<li>${step}</li>`).join("");
 
-        // Starts returning the HTML template for one utility card.
+        const images = item.images.map(image => `
+          <div class="image-card">
+            <img src="${image.src}" alt="${item.title} - ${image.label}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.textContent='Missing image: ' + this.getAttribute('src');" />
+            <span>${image.label}</span>
+          </div>
+        `).join("");
+
         return `
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           <article class="utility-card">
-            // JavaScript line used for data, filtering, rendering, or page interaction.
             <div class="vote-box">
-              // JavaScript line used for data, filtering, rendering, or page interaction.
               useful
-              // JavaScript line used for data, filtering, rendering, or page interaction.
               <span class="score">${item.score}</span>
-              // JavaScript line used for data, filtering, rendering, or page interaction.
               score
-            // JavaScript line used for data, filtering, rendering, or page interaction.
             </div>
 
-            // JavaScript line used for data, filtering, rendering, or page interaction.
             <div>
-              // JavaScript line used for data, filtering, rendering, or page interaction.
               <h3 class="utility-title">${item.title}</h3>
-              // JavaScript line used for data, filtering, rendering, or page interaction.
+
               <div class="meta">
-                // JavaScript line used for data, filtering, rendering, or page interaction.
                 Map: <strong>${item.map}</strong> |
-                // JavaScript line used for data, filtering, rendering, or page interaction.
                 Side: <strong>${item.side.toUpperCase()}</strong> |
-                // JavaScript line used for data, filtering, rendering, or page interaction.
                 Thrower: <strong>${item.thrower}</strong> |
-                // JavaScript line used for data, filtering, rendering, or page interaction.
                 Status: <span class="${statusClass}">${item.status}</span>
-              // JavaScript line used for data, filtering, rendering, or page interaction.
               </div>
 
-              // JavaScript line used for data, filtering, rendering, or page interaction.
               <div class="tags">${tags}</div>
 
-              // JavaScript line used for data, filtering, rendering, or page interaction.
               <details>
-                // JavaScript line used for data, filtering, rendering, or page interaction.
                 <summary>show lineup and team notes</summary>
-                // JavaScript line used for data, filtering, rendering, or page interaction.
                 <div class="lineup">${item.lineup}</div>
-                // JavaScript line used for data, filtering, rendering, or page interaction.
                 <ol class="steps">${steps}</ol>
-                // JavaScript line used for data, filtering, rendering, or page interaction.
-                <div class="image-gallery">
-                  // JavaScript line used for data, filtering, rendering, or page interaction.
-                  ${item.images.map(image => `
-                    // JavaScript line used for data, filtering, rendering, or page interaction.
-                    <div class="image-card">
-                      // JavaScript line used for data, filtering, rendering, or page interaction.
-                      <img src="${image.src}" alt="${item.title} - ${image.label}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.textContent='Missing image: ' + this.getAttribute('src');" />
-                      // JavaScript line used for data, filtering, rendering, or page interaction.
-                      <span>${image.label}</span>
-                    // JavaScript line used for data, filtering, rendering, or page interaction.
-                    </div>
-                  // JavaScript line used for data, filtering, rendering, or page interaction.
-                  `).join("")}
-                // JavaScript line used for data, filtering, rendering, or page interaction.
-                </div>
-                // JavaScript line used for data, filtering, rendering, or page interaction.
-                <p>
-                  // JavaScript line used for data, filtering, rendering, or page interaction.
-                  <button class="copy-btn" onclick="copyLineup(${index})">Copy lineup text</button>
-                // JavaScript line used for data, filtering, rendering, or page interaction.
-                </p>
-              // JavaScript line used for data, filtering, rendering, or page interaction.
+                <div class="image-gallery">${images}</div>
+                <p><button class="copy-btn" onclick="copyLineup(${index})">Copy lineup text</button></p>
               </details>
-            // JavaScript line used for data, filtering, rendering, or page interaction.
             </div>
-          // JavaScript line used for data, filtering, rendering, or page interaction.
           </article>
-        // JavaScript line used for data, filtering, rendering, or page interaction.
         `;
-      // JavaScript line used for data, filtering, rendering, or page interaction.
       }).join("");
-    // Ends one utility entry or JavaScript block.
     }
 
-    // Creates the function that copies a lineup to the clipboard.
+    /* Copies a card's lineup and steps to clipboard. */
     function copyLineup(index) {
-      // Creates a JavaScript constant used by the page logic.
       const item = getFilteredData()[index];
-      // Builds searchable text for the current utility entry.
       const text = `${item.title}\n${item.lineup}\n\nSteps:\n- ${item.steps.join("\n- ")}`;
-      // Attempts to copy the generated lineup text to the clipboard.
+
       navigator.clipboard.writeText(text).then(() => {
-        // JavaScript line used for data, filtering, rendering, or page interaction.
         alert("Lineup copied.");
-      // JavaScript line used for data, filtering, rendering, or page interaction.
       }).catch(() => {
-        // JavaScript line used for data, filtering, rendering, or page interaction.
         alert("Could not copy. Browser permissions may block clipboard access.");
-      // JavaScript line used for data, filtering, rendering, or page interaction.
       });
-    // Ends one utility entry or JavaScript block.
     }
 
-    // Creates the function that opens all detail sections.
+    /* Opens all collapsed utility details. */
     function expandAll() {
-      // JavaScript line used for data, filtering, rendering, or page interaction.
       document.querySelectorAll("details").forEach(detail => {
-        // Opens one expandable details block.
         detail.open = true;
-      // JavaScript line used for data, filtering, rendering, or page interaction.
       });
-    // Ends one utility entry or JavaScript block.
     }
 
-    // Creates the function that closes all detail sections.
+    /* Closes all expanded utility details. */
     function collapseAll() {
-      // JavaScript line used for data, filtering, rendering, or page interaction.
       document.querySelectorAll("details").forEach(detail => {
-        // Closes one expandable details block.
         detail.open = false;
-      // JavaScript line used for data, filtering, rendering, or page interaction.
       });
-    // Ends one utility entry or JavaScript block.
     }
 
-    // Refreshes the displayed utility cards.
+    /* Initial render when the page loads. */
     renderUtilities();
-  // JavaScript line used for data, filtering, rendering, or page interaction.
   </script>
-<!-- Ends the visible page content. -->
 </body>
-<!-- Ends the HTML document. -->
 </html>
